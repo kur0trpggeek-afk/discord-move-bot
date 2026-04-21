@@ -271,6 +271,13 @@ async def trpg_start(
         f"メンバー：{member_mentions}"
     )
 
+    # Webhookを作成してURLをチャンネルに送信
+    try:
+        webhook = await new_channel.create_webhook(name=scenario)
+        await new_channel.send(f"🔗 Webhook URL：{webhook.url}")
+    except discord.Forbidden:
+        await new_channel.send("⚠️ Webhookの作成に失敗しました。BOTに「ウェブフックの管理」権限があるか確認してください。")
+
 
 @trpg_start.autocomplete("category")
 async def trpg_category_autocomplete(
