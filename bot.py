@@ -163,7 +163,6 @@ async def archive_error(interaction: discord.Interaction, error: app_commands.Ap
 # 今いるチャンネルのWebhookを作成してURLを送信
 # -----------------------------------------------
 @tree.command(name="webhook", description="このチャンネルのWebhook URLを作成して送信します")
-@app_commands.checks.has_permissions(manage_webhooks=True)
 async def create_webhook(interaction: discord.Interaction):
     channel = interaction.channel
 
@@ -181,15 +180,6 @@ async def create_webhook(interaction: discord.Interaction):
     except discord.HTTPException as e:
         await interaction.response.send_message(
             f"❌ エラーが発生しました: {e}",
-            ephemeral=True
-        )
-
-
-@create_webhook.error
-async def webhook_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
-    if isinstance(error, app_commands.MissingPermissions):
-        await interaction.response.send_message(
-            "❌ このコマンドを使うには **ウェブフックの管理** 権限が必要です。",
             ephemeral=True
         )
 
