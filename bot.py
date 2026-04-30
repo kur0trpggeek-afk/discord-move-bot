@@ -159,6 +159,42 @@ async def archive_error(interaction: discord.Interaction, error: app_commands.Ap
 
 
 # -----------------------------------------------
+# /webhook コマンド
+# 今いるチャンネルのWebhookを作成してURLを送信
+# -----------------------------------------------
+@tree.command(name="webhook", description="このチャンネルのWebhook URLを作成して送信します")
+@app_commands.checks.has_permissions(manage_webhooks=True)
+async def create_webhook(interaction: discord.Interaction):
+    channel = interaction.channel
+
+    try:
+        webhook = await channel.create_webhook(name=channel.name)
+        await interaction.response.send_message(
+            f"🔗 Webhook URL：{webhook.url}",
+            ephemeral=True
+        )
+    except discord.Forbidden:
+        await interaction.response.send_message(
+            "❌ BOTに「ウェブフックの管理」権限がありません。",
+            ephemeral=True
+        )
+    except discord.HTTPException as e:
+        await interaction.response.send_message(
+            f"❌ エラーが発生しました: {e}",
+            ephemeral=True
+        )
+
+
+@create_webhook.error
+async def webhook_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message(
+            "❌ このコマンドを使うには **ウェブフックの管理** 権限が必要です。",
+            ephemeral=True
+        )
+
+
+# -----------------------------------------------
 # /trpg_start コマンド
 # 「卓募集」チャンネルからシナリオ名で募集投稿を探し
 # リアクションしたメンバー＋投稿者でプライベートチャンネルを作成
